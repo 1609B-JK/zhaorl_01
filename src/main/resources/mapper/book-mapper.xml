@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk.dao.book.BookDao">
+
+
+
+    <!-- parameterType === parameterClass
+        resultType === resultClass
+        #{} === ##
+        ${} === $$
+     -->
+    <!--查询总条数-->
+    <select id="selectCount" parameterType="book" resultType="int" >
+        select
+        count(t_id)
+        from t_books
+    </select>
+    <!--查询-->
+    <select id="queryBookList" parameterType="book" resultType="book">
+        SELECT * FROM (
+        SELECT  u1.*, rownum as rn from (
+        SELECT t_id as "bookID",
+        t_name as "bookName"
+        FROM  t_books
+        ) u1
+        WHERE rownum <![CDATA[<=]]> #{endPos}
+        ) u2
+        WHERE u2.rn >= #{startPos}
+    </select>
+    <!--新增-->
+   <insert id="insertBook" parameterType="book">
+        INSERT INTO t_books
+        (t_id, t_name)
+        VALUES
+        (t_books_seq.nextval, #{bookName})
+   </insert>
+
+   <!--删除-->
+    <delete id="deleteBookByID" parameterType="book">
+        DELETE  FROM  t_books where t_id = #{bookID}
+    </delete>
+    <!--回显-->
+    <select id="updatePage" parameterType="book" resultType="book">
+        SELECT t_id as "bookID",
+        t_name as "bookName"
+        FROM  t_books
+        WHERE  t_id = #{bookID}
+    </select>
+    <!--修改-->
+    <update id="updateBook" parameterType="book">
+        UPDATE  t_books SET
+        t_name = #{bookName}
+        WHERE  t_id = #{bookID}
+    </update>
+</mapper>
